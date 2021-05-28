@@ -1,0 +1,62 @@
+version: "3.7"
+services:
+
+  # frontend service has to include envoy as a sidecar
+  frontservice:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontservice
+    volumes:
+      - ./envoy.yaml:/etc/envoy.yaml
+    networks:
+      - envoymesh
+    environment:
+      #################################
+      # IMPORTANT: Change between these two in order to go through
+      # the Envoy proxy OR alternatively hit the backend service directly,
+      # bypassing the circuit breaking features of Envoy.
+
+      # hit the service directly, do not go through envoy
+#      - BACK_SERVICE_HOSTNAME=backendservice
+#      - BACK_SERVICE_PORT=8080
+
+      # hit the service THROUGH envoy
+      - BACK_SERVICE_HOSTNAME=127.0.0.1
+      - BACK_SERVICE_PORT=7000
+    ports:
+    - "8080:8080" # dropwizard service
+    - "8081:8081" # dropwizard admin
+    - "8001:8001" # envoy stats/admin
+
+  backendservice:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - envoymesh
+    environment:
+      - BACK_SERVICE_HOSTNAME=none
+      - BACK_SERVICE_PORT=9999 # note doesn't matter, this is the backend service
+    ports:
+      - "9091:8081" # dropwizard admin
+
+  prometheus:
+    image: prom/prometheus
+    networks:
+      - envoymesh
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  # default credentials are admin/admin
+  # configure datasource pointing to http://prometheus:9090
+  grafana:
+    image: grafana/grafana
+    networks:
+      - envoymesh
+    ports:
+      - "3000:3000"
+
+networks:
+  envoymesh: {}

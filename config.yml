@@ -1,0 +1,16 @@
+logging:
+  level: INFO
+  loggers:
+    com.stantonk: DEBUG
+
+server:
+  type: default
+  #maxThreads: 1024 <-- default
+  # by lowering to 10 threads, we can readily simulate what it's like
+  # to be at over capacity where the frontservice won't load while the
+  # backendservice's /service/slow endpoint is hanging for 10 seconds
+  # a piece for each request hitting it
+  maxThreads: 10
+  adminConnectors:
+    - type: http
+      port: 8081

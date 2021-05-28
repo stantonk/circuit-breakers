@@ -1,0 +1,12 @@
+logging:
+  level: INFO
+  loggers:
+    com.stantonk: DEBUG
+
+server:
+  type: default
+#  maxThreads: 1024 # <-- default
+  maxThreads: 10 #
+  adminConnectors:
+    - type: http
+      port: 8081
