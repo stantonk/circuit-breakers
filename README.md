@@ -9,6 +9,14 @@ For simplicity, "front service" and "backend service" are the same Java service 
 
 ![](experiment.png)
 
+
+Note, based on Envoy's docs, it provides 3 different "types" of Circuit
+Breaking:
+
+* [the standard built in type](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/upstream/circuit_breaking.html?highlight=circuit%20breaking)
+* [outlier detection](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/upstream/outlier)
+* [adaptive concurrency](https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/adaptive_concurrency_filter), see also: [Envoy, Take the Wheel: Real-time Adaptive Circuit Breaking - Tony Allen, Lyft](https://www.youtube.com/watch?v=CQvmSXlnyeQ)
+
 ## Instructions to run the simulation
 
 You can choose to route traffic to "backend service" either through the Envoy Proxy, or directly to the "backend service", so you can see what happens in the below steps when you have circuit breaking and when you don't.
